@@ -1,0 +1,238 @@
+<?php
+  // BDTD: baseado em bootstrap5/templates/layout/layout.phtml (VuFind 11.1).
+  // Diferenças em relação ao original estão marcadas com "BDTD:".
+  if (($children = $this->layout()->getChildren()) && $children[0]?->getTemplate() === 'laminas_whoops/simple_error') {
+    // Whoops error is a complete page, so just output it and nothing else:
+    echo $this->layout()->content;
+    return;
+  }
+  echo $this->doctype();
+?>
+<?php
+  // Set up the search box -- there are three possible cases:
+  // 1. No search box was set; we should default to the normal box
+  // 2. It was set to false; we should display nothing
+  // 3. It is set to a custom string; we should display the provided version
+  // Set up default search box if no data was provided from the template;
+  // this covers case 1.  Cases 2 and 3 are then covered by logic below.
+  // Note: The searchbox needs to be rendered before the HTML header is build.
+  // Otherwise, the Javascript will not be loaded correctly.
+  if (!isset($this->layout()->searchbox)) {
+    $this->layout()->searchbox = $this->context($this)->renderInContext('search/searchbox.phtml', []);
+  }
+
+  // BDTD: barra do Governo Federal (config.ini [BdtdTheme] gov_bar)
+  $govBar = (bool)($this->config()->get('config')->BdtdTheme->gov_bar ?? false);
+  if ($govBar) {
+    $this->assetManager()->appendScriptLink(
+        src: 'https://barra.brasil.gov.br/barra_2.0.js',
+        attrs: ['async' => 'async'],
+        position: 'footer'
+    );
+  }
+
+  // BDTD: serviços de terceiros da produção (config.ini [BdtdTheme]): botão do Google
+  // Tradutor, widget de acessibilidade UserWay e verificação do Google Search Console
+  $bdtdTheme = $this->config()->get('config')->BdtdTheme ?? null;
+  $googleTranslate = (bool)($bdtdTheme->google_translate ?? false);
+  $userwayAccount = (string)($bdtdTheme->userway_account ?? '');
+  $googleSiteVerification = (string)($bdtdTheme->google_site_verification ?? '');
+  if ($googleSiteVerification !== '') {
+    $this->headMeta()->appendName('google-site-verification', $googleSiteVerification);
+  }
+  if ($userwayAccount !== '') {
+    $this->assetManager()->appendScriptLink(
+        src: 'https://cdn.userway.org/widget.js',
+        attrs: ['data-account' => $userwayAccount],
+        position: 'footer',
+        // sem esta opção o Laminas descarta o data-account e o widget abre sem a conta da BDTD
+        options: ['allow_arbitrary_attributes' => true]
+    );
+  }
+?>
+<html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
+  <head>
+    <?php $this->setupThemeResources(); ?>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <?=$this->headMeta()?>
+    <?=$this->googleTagManager()->getHeadCode()?>
+
+    <?php
+      // Format the page title using the translation system:
+      $siteConfig = $this->config()->get('config')->Site;
+      // Disabled escaping of title temporarily so that we get it unescaped first:
+      $this->headTitle()->setAutoEscape(false);
+      $fullTitle = $this->translate(
+          'title_wrapper',
+          [
+            '%%pageTitle%%' => $this->headTitle()->renderTitle(),
+            '%%siteTitle%%' => $siteConfig->title,
+            '%%titleSeparator%%' => $siteConfig->titleSeparator ?? '::',
+          ]
+      );
+      // Enable escaping again for proper output:
+      $this->headTitle()->setAutoEscape(true);
+      echo $this->headTitle($fullTitle, \Laminas\View\Helper\Placeholder\Container\AbstractContainer::SET);
+
+      // Set up OpenSearch link:
+      $this->headLink(
+          [
+            'href' => $this->url('search-opensearch') . '?method=describe',
+            'type' => 'application/opensearchdescription+xml',
+            'title' => $this->transEsc('Library Catalog Search'),
+            'rel' => 'search',
+          ]
+      );
+      // We need to generate the icons early, because they may add some stylesheets;
+      // if we render them after calling AssetManager's outputHeaderAssets method,
+      // some dependencies may not load correctly. Thus, we render early, but use
+      // this later.
+      $icons = !isset($this->renderingError) ? $this->render('js-icons.phtml') : '{}';
+    ?>
+    <?php if ($this->layout()->rtl) {
+      // RTL styling
+      $this->assetManager()->appendStyleLink('vendor/bootstrap-rtl.min.css');
+    } ?>
+    <?php
+      // Collect small scripts together and append as one block:
+      $appendScripts = [];
+
+      $themeConfig = $this->themeConfig();
+      if (!empty($themeConfig['stickyElements'])) {
+        $this->assetManager()->appendScriptLink('sticky_elements.js');
+      }
+
+      if (!isset($this->renderingError)) {
+        // Deal with cart stuff:
+        $cart = $this->cart();
+        if ($cart->isActive()) {
+          $this->assetManager()->appendScriptLink('cart.js');
+        }
+        $this->assetManager()->prependScriptString(
+            'var userIsLoggedIn = ' . ($this->auth()->getIdentity() ? 'true' : 'false') . ';'
+        );
+      }
+
+      // Session keep-alive
+      if ($this->keepAlive()) {
+          $appendScripts[] = 'var keepAliveInterval = ' . $this->keepAlive() . ';';
+          $this->assetManager()->appendScriptLink('keep_alive.js');
+      }
+
+      // If account ajax is active, load script and add language strings
+      $account = $this->auth()->getManager();
+      if ($account->ajaxEnabled()) {
+        $this->assetManager()->appendScriptLink('account_ajax.js');
+        if ($this->session()->put('reset_account_status', null)) {
+          $this->assetManager()->appendScriptString(
+              script: 'VuFind.account.clearAllCaches();',
+              attrs: ['data-lightbox-run' => 'always'],
+              options: ['allow_arbitrary_attributes' => true]
+          );
+        }
+      }
+
+      $root = rtrim($this->url('home'), '/');
+      $jsConfig = !isset($this->renderingError) ? $this->render('js-configs.phtml') : '{}';
+      $translations = !isset($this->renderingError) ? $this->render('js-translations.phtml') : '{}';
+      $dsb = DEFAULT_SEARCH_BACKEND;
+      $cspNonce = $this->csp()->getNonce();
+      $searchId = json_encode($this->layout()->searchId);
+      $theme = json_encode($themeConfig['themeName']);
+
+      $appendScripts[] = <<<JS
+          VuFind.path = '{$root}';
+          VuFind.defaultSearchBackend = '{$dsb}';
+          VuFind.config.add({$jsConfig});
+          VuFind.addTranslations({$translations});
+          VuFind.addIcons({$icons});
+          VuFind.setCspNonce('{$cspNonce}');
+          VuFind.setCurrentSearchId($searchId);
+          VuFind.setTheme($theme);
+          JS;
+
+      if ($domain = $this->cookieManager()->getDomain()) {
+        $appendScripts[] = 'VuFind.cookie.setDomain(' . json_encode($domain) . ');';
+      }
+      if ($cookiePath = $this->cookieManager()->getPath()) {
+        $appendScripts[] = 'VuFind.cookie.setCookiePath(' . json_encode($cookiePath) . ');';
+      }
+      if ($cookieSameSite = $this->cookieManager()->getSameSite()) {
+        $appendScripts[] = 'VuFind.cookie.setCookieSameSite(' . json_encode($cookieSameSite) . ');';
+      }
+
+      if (!empty($lightboxParent)) {
+        $lightboxParent = json_encode((string)$lightboxParent);
+        $appendScripts[] = 'VuFind.lightbox.parent = ' . $lightboxParent . ';';
+      }
+
+      if (!empty($lightboxChild)) {
+        $lightboxChild = json_encode((string)$lightboxChild);
+        $appendScripts[] = 'VuFind.lightbox.child = ' . $lightboxChild . ';';
+      }
+
+      $this->assetManager()->appendScriptString(implode("\n", $appendScripts));
+    ?>
+    <?=$this->assetManager()->outputHeaderAssets()?>
+  </head>
+  <body class="template-dir-<?=$this->templateDir?> template-name-<?=$this->templateName?> <?=$this->layoutClass('offcanvas-row')?><?php if ($this->layout()->rtl): ?> rtl<?php endif; ?>">
+    <?=$this->cookieConsent()->render('bottom')?>
+    <?php if ($govBar): /* BDTD: barra do Governo Federal, preenchida pelo barra_2.0.js */ ?>
+      <div id="barra-brasil" class="hidden-print">
+        <ul id="menu-barra-temp">
+          <li><a href="http://brasil.gov.br">Portal do Governo Brasileiro</a></li>
+        </ul>
+      </div>
+    <?php endif; ?>
+    <?php /* BDTD: classes de navbar no header, como no legado (o CSS do tema usa header.navbar) */ ?>
+    <header class="navbar navbar-expand-lg hidden-print">
+      <?php if (isset($this->layout()->srmessage)): // message for benefit of screen-reader users ?>
+        <span class="visually-hidden" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
+      <?php endif; ?>
+      <a class="visually-hidden-focusable" href="#content"><?=$this->transEsc('Skip to content') ?></a>
+      <?=$this->render('header.phtml')?>
+    </header>
+    <?php if ($this->layout()->searchbox !== false): /* BDTD: busca numa faixa própria abaixo do topo */ ?>
+      <div class="searchHomeContent hidden-print">
+        <div class="search container navbar">
+          <div class="nav searchbox" role="search">
+            <?=$this->layout()->searchbox ?>
+          </div>
+        </div>
+      </div>
+    <?php endif; ?>
+    <?=$this->breadcrumbs()->render()?>
+    <div role="main" class="main">
+      <?php /* BDTD: páginas com faixas na largura total (página inicial) usam container-fluid */ ?>
+      <div id="content" class="<?=$this->layout()->layoutFull ? 'container-fluid' : 'container'?>">
+        <?php if (!($this->layout()->disableDefaultNotices ?? false)): ?>
+          <?=$this->notices()->renderNoticesForPosition('default')?>
+        <?php endif; ?>
+        <?=$this->layout()->content ?>
+      </div>
+    </div>
+    <?=$this->render('footer.phtml')?>
+    <!-- MODAL IN CASE WE NEED ONE -->
+    <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="<?=$this->transEscAttr('Close')?>">
+            <?php /* BDTD: "X" desenhado em SVG, como no legado */ ?>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+          <div class="modal-body"></div>
+        </div>
+      </div>
+    </div>
+    <div class="vufind-offcanvas-overlay" data-toggle="vufind-offcanvas"></div>
+    <?=$this->render('Helpers/analytics.phtml')?>
+    <?php if ($googleTranslate): ?>
+      <?=$this->render('layout/google-translate.phtml')?>
+    <?php endif; ?>
+    <?php foreach ($this->captcha()->js() as $jsInclude):?>
+      <?=$this->assetManager()->outputInlineScriptLink($jsInclude)?>
+    <?php endforeach; ?>
+
+    <?=$this->assetManager()->outputFooterAssets() ?>
+  </body>
+</html>

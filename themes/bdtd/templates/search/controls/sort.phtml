@@ -1,0 +1,18 @@
+<?php
+  // BDTD: baseado em bootstrap5/templates/search/controls/sort.phtml (VuFind 11.1);
+  // rótulo com dois-pontos e seletor .form-control, como no legado
+  $list = $this->params->getSortList();
+  $listCount = count($list);
+?>
+<?php if ($listCount > 0): ?>
+  <form class="search-sort" action="<?=$this->currentPath()?>" method="get" name="sort">
+    <?=$this->results->getUrlQuery()->asHiddenFields(['sort' => '/.*/', 'page' => '/.*/']);?>
+    <label for="sort_options_1"><?=$this->transEsc('Sort')?>:</label>
+    <select id="sort_options_1" name="sort" class="jumpMenu form-control"<?=$listCount === 1 ? ' disabled' : ''?>>
+      <?php foreach ($list as $sortType => $sortData): ?>
+        <option value="<?=$this->escapeHtmlAttr($sortType)?>"<?=$sortData['selected'] ? ' selected="selected"' : ''?><?=$sortData['default'] ? ' data-default' : ''?>><?=$this->transEsc($sortData['desc'])?></option>
+      <?php endforeach; ?>
+    </select>
+    <noscript><input type="submit" class="btn btn-default" value="<?=$this->transEscAttr('Set')?>"></noscript>
+  </form>
+<?php endif; ?>

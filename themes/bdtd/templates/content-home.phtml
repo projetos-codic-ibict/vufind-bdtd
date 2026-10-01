@@ -1,0 +1,29 @@
+<?php
+  // BDTD: texto institucional e parceiros exibidos na página inicial.
+  $partners = [
+    ['oasisbr', 'https://oasisbr.ibict.br/vufind/', 'partners/oasisbr.png', 'Oasisbr', 'Portal brasileiro de publicações e dados científicos em acesso aberto', 'logo do oasisbr'],
+    ['deposita', 'https://deposita.ibict.br/', 'partners/deposita.png', 'Deposita', 'Repositório Comum do Brasil', 'logo do deposita'],
+    ['lareferencia', 'https://www.lareferencia.info/pt/', 'partners/la_referencia.png', 'LA Referencia', 'Red de repositorios de acceso abierto a la ciencia', 'logo da LA Referencia'],
+    ['ndltd', 'https://ndltd.org/', 'partners/ndltd.png', 'NDLTD', 'The Networked Digital Library of Theses and Dissertations', 'logo da NDLTD'],
+  ];
+?>
+<div class="about">
+  <h2 class="main-second-title title-primary">BDTD</h2>
+  <p>
+    O Ibict desenvolveu e coordena a Biblioteca Digital Brasileira de Teses e Dissertações (BDTD), que integra os sistemas de informação de teses e dissertações existentes nas instituições de ensino e pesquisa do Brasil, e também estimula o registro e a publicação de teses e dissertações eletrônico. A BDTD, em parceria com as instituições brasileiras de ensino e pesquisa, possibilita que a comunidade brasileira de C&amp;T publique e difunda suas teses e dissertações produzidas no País e no exterior, dando maior visibilidade à produção científica nacional.
+  </p>
+</div>
+
+<div class="partners">
+  <?php foreach ($partners as [$class, $url, $image, $name, $description, $alt]): ?>
+    <a class="partner <?=$class?>" href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" rel="noopener noreferrer">
+      <div class="partner-logo">
+        <img src="<?=$this->imageLink($image)?>" alt="<?=$this->escapeHtmlAttr($alt)?>">
+      </div>
+      <div class="partner-desc">
+        <h3 class="main-highlight"><?=$this->escapeHtml($name)?></h3>
+        <p><?=$this->escapeHtml($description)?></p>
+      </div>
+    </a>
+  <?php endforeach; ?>
+</div>

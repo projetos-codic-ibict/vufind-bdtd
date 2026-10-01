@@ -1,0 +1,100 @@
+<?php
+  // BDTD: página inicial do legado (faixa com título, contadores e busca, atalhos, texto
+  // institucional e parceiros).
+  $this->headTitle($this->translate('BDTD'));
+
+  // A busca fica dentro da faixa desta página, não no topo
+  $this->layout()->searchbox = false;
+  $this->layout()->disableDefaultNotices = true;
+  $this->layout()->layoutFull = true;
+
+  if (!isset($this->searchClassId)) {
+    $config = $this->config()->get('config');
+    $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
+  }
+
+  $this->breadcrumbs()->disable();
+  $this->assetManager()->appendScriptLink('indicators-home.js');
+?>
+<div class="search-box">
+  <div class="container">
+    <div class="box-title">
+      <h1 class="bdtd-title">Biblioteca Digital Brasileira de <br> Teses e Dissertações</h1>
+      <h4 class="bdtd-subtitle">Acesso e visibilidade às teses e dissertações brasileiras</h4>
+    </div>
+
+    <?php /* Contadores preenchidos pelo indicators-home.js (API de busca) */ ?>
+    <?php $resultsUrl = $this->url('search-results'); ?>
+    <div class="indicators text-primary">
+      <div class="item">
+        <i class="uil uil-university"></i>
+        <a href="<?=$this->url('datasources-home')?>" class="data">
+          <span id="institution" class="main-highlight">000</span>
+          <span>Instituições</span>
+        </a>
+      </div>
+      <div class="item">
+        <i class="uil uil-clipboard-alt"></i>
+        <a href="<?=$this->escapeHtmlAttr($resultsUrl . '?limit=0&lookfor=%2A%3A%2A&type=AllFields&filter%5B%5D=format%3A%22masterThesis%22')?>" class="data">
+          <span id="masterThesis" class="main-highlight">000</span>
+          <span>Dissertações</span>
+        </a>
+      </div>
+      <div class="item">
+        <i class="uil uil-book-open"></i>
+        <a href="<?=$this->escapeHtmlAttr($resultsUrl . '?limit=0&lookfor=%2A%3A%2A&type=AllFields&filter%5B%5D=format%3A%22doctoralThesis%22')?>" class="data">
+          <span id="doctorThesis" class="main-highlight">000</span>
+          <span>Teses</span>
+        </a>
+      </div>
+      <div class="item">
+        <i class="uil uil-file-info-alt"></i>
+        <a href="<?=$this->escapeHtmlAttr($resultsUrl)?>" class="data">
+          <span id="total" class="main-highlight">000</span>
+          <span>Documentos</span>
+        </a>
+      </div>
+    </div>
+
+    <?php $this->slot('search-home-hero')->start() ?>
+      <?=$this->context($this)->renderInContext('search/searchbox.phtml', ['focusOnLoad' => true, 'ignoreHiddenFilterMemory' => true])?>
+    <?=$this->slot('search-home-hero')->end() ?>
+  </div>
+</div>
+<div class="container">
+  <div class="search-info bottom-search-form">
+    <a class="item" href="<?=$this->url('participate-home')?>">
+      <div class="text-primary flex-row-spaced-between">
+        <h4 class="main-highlight">
+          Participe
+        </h4>
+        <i class="uil uil-feedback"></i>
+      </div>
+      <p>Faça parte da BDTD e contribua com a disseminação das teses e dissertações produzidas por pesquisadores brasileiros.</p>
+    </a>
+    <a class="item" href="<?=$this->url('technology-home')?>">
+      <div class="text-primary flex-row-spaced-between">
+        <h4 class="main-highlight">
+          Tecnologia
+        </h4>
+        <i class="uil uil-globe"></i>
+      </div>
+      <p>Em concordância com os preceitos da Ciência Aberta, toda a tecnologia utilizada para o funcionamento da BDTD são de código livre.</p>
+    </a>
+    <a class="item" href="<?=$this->url('indicators-home')?>">
+      <div class="text-primary flex-row-spaced-between">
+        <h4 class="main-highlight">
+          Indicadores
+        </h4>
+        <i class="uil uil-chart-line"></i>
+      </div>
+      <p> Acesse alguns indicadores quantitativos relativos às teses e dissertações no Brasil.</p>
+    </a>
+  </div>
+</div>
+
+<?=$this->notices()->renderNoticesForPosition('default')?>
+
+<div class="container">
+  <?=$this->render('content-home.phtml')?>
+</div>

@@ -1,0 +1,54 @@
+<?php
+// BDTD: baseado em bootstrap5/templates/RecordDriver/DefaultRecord/data-authors.phtml
+// (VuFind 11.1); perfil Lattes como link com o ícone, como no legado.
+$formatProperty = function ($datafield, $name, $label) {
+    if (count($datafield) == 0) {
+        return '';
+    }
+    // BDTD: ícone do Lattes com link para o perfil (só endereços http/https)
+    if ($name == 'profile') {
+        $url = trim((string)$datafield[0]);
+        if (!preg_match('#^https?://#i', $url)) {
+            return '';
+        }
+        return '<a target="_blank" rel="noopener" class="author-property-profile" href="'
+            . $this->escapeHtmlAttr($url) . '"><img class="logoLattes" alt="lattes" src="'
+            . $this->escapeHtmlAttr($this->imageLink('lattes.gif')) . '" width="15"></a>';
+    }
+    $that = $this;
+    $translate = function ($str) use ($that, $label) {
+        return $that->transEsc($label . $str);
+    };
+    return '<span class="author-property-' . $name . '">(' . implode(', ', array_unique(array_map($translate, $datafield))) . ')</span>';
+};
+$formattedAuthors = [];
+?>
+<?php if (!empty($data[$type])): ?>
+  <?php foreach ($data[$type] as $author => $dataFields): ?>
+    <?php ob_start(); ?>
+    <span class="author-data"<?=$this->schemaOrg()->getAttributes(['property' => $schemaLabel])?>>
+      <a href="<?=$this->record($this->driver)->getLink('author', $author)?>">
+        <?=$this->escapeHtml(rtrim($author, ','))?>
+      </a>
+      <?php
+        // Display additional data using the appropriate translation prefix
+        // (for example, to render author roles correctly):
+        if (!empty($requiredDataFields)) {
+          foreach ($requiredDataFields as $field) {
+              $name = $field['name'];
+              $prefix = $field['prefix'] ?? '';
+              if (isset($dataFields[$name])) {
+                  echo $formatProperty($dataFields[$name], $name, $prefix);
+              }
+          }
+        }
+      ?>
+    </span>
+    <?php
+      // Strip whitespace before close tags to avoid spaces in front of commas:
+      $formattedAuthors[] = trim(preg_replace('/\s+<\//', '</', ob_get_contents()));
+      ob_end_clean();
+    ?>
+  <?php endforeach; ?>
+<?php endif; ?>
+<?=implode(', ', $formattedAuthors)?>

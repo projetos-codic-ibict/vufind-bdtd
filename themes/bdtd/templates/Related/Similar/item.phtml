@@ -1,0 +1,27 @@
+<?php
+    // BDTD: baseado em bootstrap5/templates/Related/Similar/item.phtml (VuFind 11.1);
+    // ícone de documento antes do link, fora dele, como no legado.
+    $attrs = ['class' => 'related__icon'];
+
+    $formats = $data->getFormats();
+    $format = $formats[0] ?? null;
+    $icon = $format
+        ? preg_replace('/[^a-z0-9]/', '', strtolower($format))
+        : 'default';
+
+    if ($format) {
+        $attrs['title'] = $format;
+    }
+?>
+<i class="related__format-icon"<?=isset($attrs['title']) ? ' title="' . $this->escapeHtmlAttr($attrs['title']) . '"' : ''?> aria-hidden="true"></i>
+<a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
+    <?=$this->escapeOrCleanHtml($data->getTitle(), dataContext: 'title', renderingContext: 'link')?>
+</a>
+<?php $authors = $data->getPrimaryAuthors(); ?>
+<?php if (!empty($authors)): ?>
+    <br><?=$this->transEsc('by')?>: <?=$this->escapeHtml($authors[0]);?><?php if (count($authors) > 1): ?>, <?=$this->transEsc('more_authors_abbrev')?><?php endif; ?>
+<?php endif; ?>
+<?php $pubDates = $data->getPublicationDates(); ?>
+<?php if (!empty($pubDates)): ?>
+    <br><?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($pubDates[0])?>)
+<?php endif; ?>

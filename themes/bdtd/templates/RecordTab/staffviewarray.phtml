@@ -1,0 +1,17 @@
+<?php
+    // BDTD: baseado em bootstrap5/templates/RecordTab/staffviewarray.phtml (VuFind 11.1);
+    // campos na ordem do Solr (sem ksort) e tabela com a classe do legado.
+    // Set page title.
+    $this->headTitle($this->translate('Staff View') . ': ' . $this->driver->getBreadcrumb());
+?>
+<table class="citation table table-striped"><?php /* BDTD: classe do legado */ ?>
+  <?php
+    $rawData = $this->driver->getRawData();
+  ?>
+  <?php foreach ($rawData as $field => $values): ?>
+    <tr>
+      <th><?=$this->escapeHtml($field)?></th>
+      <td><?=$this->printArrayHtml($values)?></td>
+    </tr>
+  <?php endforeach; ?>
+</table>

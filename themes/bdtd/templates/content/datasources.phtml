@@ -1,0 +1,32 @@
+<?php
+  // BDTD: página "Instituições participantes" do legado (datasources/home.phtml), em
+  // /datasources/home. Tabela montada pelo networks.js com o gridjs 6.2.0 (a mesma versão
+  // que a produção carrega do CDN), servido pelo próprio site.
+  $this->headTitle('Fontes Coletadas');
+  $this->layout()->searchbox = false;
+  $this->layout()->layoutFull = true;
+  $this->assetManager()->appendStyleLink('loader.css');
+  $this->assetManager()->appendStyleLink('vendor/gridjs-mermaid.min.css');
+  $this->assetManager()->appendScriptLink('vendor/gridjs.umd.js');
+  $this->assetManager()->appendScriptLink('networks.js');
+  // Barra de navegação vazia, como no legado
+  $this->breadcrumbs()->set('', active: true);
+?>
+
+<div class="container">
+
+  <h2 class="text-primary">Instituições participantes</h2>
+  <br />
+  <h4 class="text-secondary">
+    Conheça as instituições participantes da Biblioteca digital Brasileira de Teses e Dissertações (BDTD)
+  </h4>
+  <br /> <br />
+
+  <div class="networks">
+    <div class="loader"></div>
+    <button class="btn contained-primary btn-export-csv">
+      Exportar para CSV
+    </button>
+    <div id="networksWrapper"></div>
+  </div>
+</div>

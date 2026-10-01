@@ -1,0 +1,6 @@
+# BDTD: campos adicionais da API de busca e registro (somados aos padrões).
+# Identificador persistente dARK, como na produção.
+dc.identifier.dark.fl_str_mv:
+  vufind.method: getDarkID
+  description: dARK persistent identifier
+  type: string

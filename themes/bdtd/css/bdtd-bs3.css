@@ -1,0 +1,463 @@
+/*
+ * BDTD: padrões do Bootstrap 3 que o CSS do legado (style.css, custom.css) pressupõe.
+ * Carregado ANTES dele: substitui só os padrões do Bootstrap 5, e as regras do legado
+ * continuam prevalecendo onde definem algo.
+ */
+
+/* Cor do texto do Bootstrap 3 (#333); termos destacados em preto, como no legado */
+:root {
+  --bs-body-color: #333;
+  --bs-body-color-rgb: 51, 51, 51;
+  --bs-highlight-color: #000;
+}
+
+/* Campos e botões herdam cor e peso da fonte, como no Bootstrap 3 */
+button,
+input,
+optgroup,
+select,
+textarea {
+  color: inherit;
+  font-weight: inherit;
+}
+
+/* Grade do Bootstrap 3: espaçamento de 30px e larguras 750/970/1170px */
+.container,
+.container-fluid,
+.row {
+  --bs-gutter-x: 30px;
+}
+/* Largura fixa, não máxima (um .container dentro de outro passa da largura do pai, como no
+   Bootstrap 3) */
+@media (min-width: 576px) {
+  .container {
+    max-width: none;
+  }
+}
+@media (min-width: 768px) {
+  .container {
+    width: 750px;
+  }
+}
+@media (min-width: 992px) {
+  .container {
+    width: 970px;
+  }
+}
+@media (min-width: 1200px) {
+  .container {
+    width: 1170px;
+  }
+}
+
+/* Títulos com a altura de linha, os tamanhos e as margens do Bootstrap 3 (h2 e h3 já
+   são iguais no VuFind 11) */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  line-height: 1.1;
+}
+h1, .h1, h2, .h2, h3, .h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+h4, .h4, h5, .h5, h6, .h6 {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+h1, .h1 {
+  font-size: 36px;
+}
+h4, .h4 {
+  font-size: 18px;
+}
+h5, .h5 {
+  font-size: 14px;
+}
+h6, .h6 {
+  font-size: 12px;
+}
+
+/* Listas com o recuo do navegador (40px) e a margem do Bootstrap 3 */
+ol,
+ul {
+  padding-left: 40px;
+  margin-bottom: 10px;
+}
+
+/* Trilha de navegação do Bootstrap 3: bloco com itens em linha (mantém a altura mesmo vazia) */
+.breadcrumb {
+  display: block;
+}
+.breadcrumb > li {
+  display: inline-block;
+}
+
+/*
+ * Pseudo-elementos ::before/::after do .container (clearfix do Bootstrap 3). O legado
+ * conta com eles: na faixa da home o .container é flex com gap de 40px, e esses
+ * elementos vazios criam o respiro de 40px acima do título e abaixo da busca.
+ */
+.container::before,
+.container::after,
+.container-fluid::before,
+.container-fluid::after {
+  content: " ";
+  display: table;
+}
+.container::after,
+.container-fluid::after {
+  clear: both;
+}
+/* O VuFind 11 troca o ::after do conteúdo principal por um bloco vazio, que deixa a margem
+   do último parágrafo vazar para fora do container */
+.main .container::after {
+  display: table;
+  content: " ";
+}
+
+/* Links do menu com a altura de linha do Bootstrap 3 (os ícones herdam os 20px) */
+.navbar-nav > li > a {
+  line-height: 20px;
+}
+
+/* Barra de navegação do Bootstrap 3: bloco sem espaçamento interno, borda de 1px, altura mínima
+   50px e 20px abaixo (o .container.navbar mantém o espaçamento lateral do container) */
+.navbar {
+  --bs-navbar-padding-x: 0;
+  --bs-navbar-padding-y: 0;
+  display: block;
+  min-height: 50px;
+  margin-bottom: 20px;
+  border: 1px solid transparent;
+}
+.container.navbar {
+  --bs-navbar-padding-x: 15px;
+}
+@media (min-width: 768px) {
+  .navbar {
+    border-radius: 4px;
+  }
+}
+
+/* Painéis do Bootstrap 3 */
+.panel {
+  margin-bottom: 20px;
+  background-color: #fff;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+}
+.panel-body {
+  padding: 15px;
+}
+.panel-heading {
+  padding: 10px 15px;
+  border-bottom: 1px solid transparent;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+.panel-default {
+  border-color: #ddd;
+}
+.panel-default > .panel-heading {
+  color: #333;
+  background-color: #f5f5f5;
+  border-color: #ddd;
+}
+
+/* Abas do Bootstrap 3 (li.active > a, sem .nav-link) */
+.nav-tabs {
+  display: block;
+  border-bottom: 1px solid #ddd;
+}
+.nav-tabs::before,
+.nav-tabs::after {
+  display: table;
+  content: " ";
+}
+.nav-tabs::after {
+  clear: both;
+}
+.nav-tabs > li {
+  float: left;
+  margin-bottom: -1px;
+}
+.nav-tabs > li > a {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+  margin-right: 2px;
+  line-height: 1.42857143;
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+}
+.nav-tabs > li > a:hover,
+.nav-tabs > li > a:focus {
+  text-decoration: none;
+  background-color: #eee;
+  border-color: #eee #eee #ddd;
+}
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover,
+.nav-tabs > li.active > a:focus {
+  color: #555;
+  cursor: default;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-bottom-color: transparent;
+}
+/* Com .nav-link (VuFind 11): as mesmas medidas e cores, com a aba ativa em a.nav-link.active */
+.nav-tabs {
+  --bs-nav-tabs-border-color: #ddd;
+  --bs-nav-tabs-border-radius: 4px;
+  --bs-nav-tabs-link-hover-border-color: #eee #eee #ddd;
+  --bs-nav-tabs-link-active-color: #555;
+  --bs-nav-tabs-link-active-bg: #fff;
+  --bs-nav-tabs-link-active-border-color: #ddd #ddd transparent;
+}
+.nav-tabs > li > a.nav-link {
+  display: block;
+  margin-bottom: 0;
+}
+
+/* Menus suspensos do Bootstrap 3 (itens li > a, sem .dropdown-item; sem a seta do toggle) */
+.dropdown-menu {
+  top: 100%;
+  left: 0;
+  min-width: 160px;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  font-size: 14px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
+}
+.navbar-nav > li > .dropdown-menu {
+  margin-top: 0;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+.dropdown-menu > li > a {
+  display: block;
+  padding: 3px 20px;
+  clear: both;
+  font-weight: 400;
+  line-height: 1.42857143;
+  color: #333;
+  white-space: nowrap;
+}
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+  color: #262626;
+  text-decoration: none;
+  background-color: #f5f5f5;
+}
+.dropdown-toggle::after {
+  content: none;
+}
+
+/* Botões com a altura de linha do Bootstrap 3, sem quebra de linha */
+.btn {
+  --bs-btn-line-height: 1.42857143;
+  white-space: nowrap;
+}
+/* .btn-default do Bootstrap 3: branco com borda cinza */
+.btn-default {
+  --bs-btn-color: #333;
+  --bs-btn-bg: #fff;
+  --bs-btn-border-color: #ccc;
+  --bs-btn-hover-color: #333;
+  --bs-btn-hover-bg: #e6e6e6;
+  --bs-btn-hover-border-color: #adadad;
+  --bs-btn-active-color: #333;
+  --bs-btn-active-bg: #e6e6e6;
+  --bs-btn-active-border-color: #adadad;
+}
+
+/* Rótulos do Bootstrap 3: negrito, com 5px abaixo */
+label {
+  display: inline-block;
+  max-width: 100%;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+
+/* Rádios e caixas de seleção com o tamanho e a margem do Bootstrap 3 */
+input[type="radio"],
+input[type="checkbox"] {
+  margin: 4px 0 0;
+}
+form input[type="radio"],
+form input[type="checkbox"] {
+  width: 13px;
+  height: 15px;
+}
+
+/* Campos de formulário com a aparência do .form-control do Bootstrap 3 */
+.form-control,
+.form-select {
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: inherit;
+  line-height: 1.42857143;
+  color: #555;
+  border-color: #ccc;
+  border-radius: 4px;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+}
+.form-select {
+  line-height: normal;
+}
+form .form-select:not([multiple]),
+form input.form-control,
+select.form-control:not([multiple]):not([size]) {
+  height: 34px;
+}
+.form-select[multiple],
+.form-select[size]:not([size="1"]) {
+  padding-right: 12px;
+}
+/* No Bootstrap 3 o select com .form-control mantém a seta nativa */
+select.form-control {
+  appearance: auto;
+}
+.form-control:focus,
+.form-select:focus {
+  border-color: #66afe9;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+}
+
+/* Paginação do Bootstrap 3: 6px 12px, borda #ddd, cantos de 4px, hover cinza */
+.pagination {
+  --bs-pagination-padding-x: 12px;
+  --bs-pagination-padding-y: 6px;
+  --bs-pagination-border-color: #ddd;
+  --bs-pagination-border-radius: 4px;
+  --bs-pagination-hover-color: #092b47;
+  --bs-pagination-hover-bg: #eee;
+  --bs-pagination-hover-border-color: #ddd;
+}
+.page-link {
+  line-height: 1.42857143;
+}
+
+/*
+ * Tabelas do Bootstrap 3: células com 8px, altura de linha 1,42857 e borda superior #ddd,
+ * sem fundo próprio (as listras do CSS legado ficam no tr) e com a cor do texto
+ */
+.table {
+  --bs-table-color: #333;
+  --bs-table-bg: transparent;
+  --bs-table-striped-color: #333;
+  --bs-table-striped-bg: transparent;
+  margin-bottom: 20px;
+}
+.table > :not(caption) > * > * {
+  padding: 8px;
+  line-height: 1.42857143;
+  border-top: 1px solid #ddd;
+  border-bottom-width: 0;
+}
+/* Legenda oculta fora do fluxo, como o .sr-only do Bootstrap 3 (o 5 deixa a caption com 1px) */
+caption.visually-hidden {
+  position: absolute;
+}
+/* Tabela de metadados do registro (.citation) com os nomes dos campos à direita, como no VuFind 7 */
+.citation th {
+  text-align: right;
+}
+
+/* Barra de ferramentas do registro do VuFind 7: botões cinza sem borda, com o ícone antes do texto */
+.action-toolbar {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.action-toolbar li {
+  display: inline-block;
+}
+.toolbar-btn {
+  display: inline-block;
+  margin-bottom: 4px;
+  padding: 0.5rem 1rem;
+  font-size: inherit;
+  font-weight: inherit;
+  color: #555;
+  background-color: rgba(0, 0, 0, 0.05);
+  border: 0;
+  border-radius: 4px;
+}
+.toolbar-btn:hover {
+  color: #555;
+  text-decoration: none;
+  background-color: rgba(0, 0, 0, 0.1);
+}
+[class*="btn-type-"]::before {
+  display: inline-block;
+  margin-right: 0.25rem;
+  font-family: FontAwesome;
+  color: inherit;
+}
+.btn-type-cite::before {
+  content: "\f069";
+}
+.btn-type-print::before {
+  content: "\f02f";
+}
+.btn-type-export::before {
+  content: "\f08e";
+}
+
+/* Grupos de lista do Bootstrap 3 (itens com 10px 15px, borda #ddd sobreposta, cantos de 4px) */
+.list-group {
+  display: block;
+  padding-left: 0;
+  margin-bottom: 20px;
+  border-radius: 0;
+}
+.list-group-item {
+  position: relative;
+  display: block;
+  padding: 10px 15px;
+  margin-bottom: -1px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+}
+.list-group-item + .list-group-item {
+  border-top-width: 1px;
+}
+.list-group-item:first-child {
+  border-top-left-radius: 4px;
+  border-top-right-radius: 4px;
+}
+.list-group-item:last-child {
+  margin-bottom: 0;
+  border-bottom-right-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+/* Texto secundário com o cinza do Bootstrap 3 */
+.text-muted {
+  color: #777 !important;
+}
+
+/* Listas de definição e blocos de código do Bootstrap 3 (páginas de ajuda) */
+dt,
+dd {
+  line-height: 1.42857143;
+}
+pre {
+  display: block;
+  padding: 9.5px;
+  margin: 0 0 10px;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.42857143;
+  color: #333;
+  word-break: break-all;
+  word-wrap: break-word;
+  background-color: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}

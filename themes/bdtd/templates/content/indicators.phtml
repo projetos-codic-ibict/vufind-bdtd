@@ -1,0 +1,172 @@
+<?php
+  // BDTD: página "Indicadores" do legado (indicators/home.phtml), em /indicators/home.
+  // Gráficos pelo indicators.js com vega, vega-lite, vega-embed, wordcloud2 e tippy (as
+  // mesmas versões que a produção carrega do CDN), servidos pelo próprio site. Sem a aba
+  // de evolução, que dependia da oasisbr-api (descontinuada).
+  $this->headTitle('Indicadores');
+  $this->layout()->searchbox = false;
+  $this->assetManager()->appendStyleLink('loader.css');
+  foreach (['vega.min.js', 'vega-lite.min.js', 'vega-embed.min.js', 'wordcloud2.js', 'popper.min.js', 'tippy-bundle.umd.min.js'] as $lib) {
+    $this->assetManager()->appendScriptLink('vendor/' . $lib);
+  }
+  $this->assetManager()->appendScriptLink('indicators.js');
+  // Barra de navegação vazia, como no legado
+  $this->breadcrumbs()->set('', active: true);
+?>
+
+<h2 class="text-primary">Indicadores</h2>
+<br />
+<h3 class="text-secondary">
+  Conheça alguns indicadores da BDTD
+</h3>
+<br />
+
+<div class="container indicators">
+  <div>
+    <!-- Nav tabs -->
+    <ul class="nav nav-tabs" role="tablist">
+      <li role="presentation" class="active"><a href="#dashboard" aria-controls="dashboard" role="tab" data-bs-toggle="tab">Indicadores gerais</a></li>
+    </ul>
+    <!-- Tab panes -->
+    <div class="tab-content">
+      <div role="tabpanel" class="tab-pane active" id="dashboard">
+        <div class="loader"></div>
+        <div class="row">
+          <div class="col-md-4 col-sm-6 col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-body flex-col-center flex flex-space-between">
+                <div>
+                  <h2>Total de Documentos</h2>
+                  <span id="total-docs"></span>
+                </div>
+                <i class="fa fa-database flex icon-total-indicators"></i>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <form data-form-filter class="flex flex-space-between">
+              <input name="filter" class="search form-control" placeholder="Filtre os documentos pelos indicadores abaixo">
+              <select style="width: auto;" class="searchForm_type form-control" name="type" data-native-menu="false" aria-label="<?=$this->transEscAttr('Search type')?>">
+                <option value="" selected="selected"><?=$this->transEsc('All Fields')?></option>
+                <option value="Title"><?=$this->transEsc('Title')?></option>
+                <option value="Author"><?=$this->transEsc('Author')?></option>
+                <option value="Subject"><?=$this->transEsc('Subject')?></option>
+              </select>
+              <button data-filter-button type="submit" class="btn contained-primary fit-content">Buscar</button>
+            </form>
+            <div style="display: none;" id="results">
+              <br>
+              <p>Mostrando os resultados de <span id="total-docs-results"></span>
+                para a busca <span id="filters-search"></span>, tempo de busca:
+                <span id="time-search">0.0s</span>
+              </p>
+            </div>
+            <br>
+          </div>
+        </div>
+
+
+        <div class="row">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">Documentos por área do conhecimento do CNPq (top 10)</div>
+              <div class="panel-body flex-col-center">
+                <div id="visCnpq" style="width: 100%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">Documentos por palavra-chave (top 30)</div>
+              <div class="panel-body flex-col-center">
+                <canvas id="cloudTopic" width="500" height="300"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">Documentos por ano de publicação</div>
+              <div class="panel-body flex-col-center">
+                <div id="visYear" style="width: 100%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">Documentos por programa de pós-graduação - PPG (top 10)</div>
+              <div class="panel-body flex-col-center">
+                <div id="visPpg" style="width: 100%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-heading"> Autores com mais documentos (top 10)</div>
+              <div class="panel-body flex-col-center">
+                <div id="visAuthor" style="width: 100%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">Pesquisadores com mais orientações (Top 10)</div>
+              <div class="panel-body flex-col-center">
+                <div id="visAdv" style="width: 100%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">Instituições com mais documentos (top 10) </div>
+              <div class="panel-body flex-col-center">
+                <div id="visInst" style="width: 100%;"></div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">Documentos por tipo</div>
+              <div class="panel-body flex-col-center">
+                <div id="visType" style="width: 100%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">Documentos por idioma</div>
+              <div class="panel-body flex-col-center">
+                <div id="visLang" style="width: 100%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="panel panel-default">
+              <div class="panel-heading">Documentos por tipo de acesso</div>
+              <div class="panel-body flex-col-center">
+                <div id="visRights" style="width: 100%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,510 @@
+/*
+ * BDTD: ajustes de compatibilidade Bootstrap 3 → 5 (VuFind 11).
+ * Carregado depois de style.css e custom.css, que ficam iguais ao legado. Cada
+ * correção entra aqui, comentada, junto com o template que a exige.
+ */
+
+/*
+ * O CSS legado usa a fonte "FontAwesome" (versão 4) em pseudo-elementos. O nome passa
+ * a apontar para a fonte sólida do FontAwesome 7 que vem com o bootstrap5; os códigos
+ * usados (\f055 \f056 \f0dc \f106 \f107) são os mesmos.
+ */
+@font-face {
+  font-family: FontAwesome;
+  font-style: normal;
+  font-weight: normal;
+  font-display: block;
+  src: url("../../bootstrap5/css/vendor/font-awesome/webfonts/fa-solid-900.woff2") format("woff2");
+}
+
+/*
+ * Facetas da lateral com as medidas do legado: o VuFind 11 usa ul/li e span.facet >
+ * a.main-link onde o VuFind 7 tinha a.facet, e data-bs-toggle no lugar de data-toggle.
+ */
+@media (min-width: 768px) {
+  .sidebar.left {
+    padding-right: 1rem;
+  }
+}
+.facet-group {
+  --bs-border-color: #ddd;
+}
+/*
+ * Seta de abrir/fechar do CSS legado (fechada: .collapsed::after do custom.css), com o
+ * tamanho e a posição da seta do FontAwesome 4 (a do 7 é maior e ocupa 0,75em)
+ */
+.facet-group .title {
+  display: block;
+}
+.facet-group .title::after {
+  float: right;
+  width: 0.818em;
+  font-family: FontAwesome;
+  font-size: 0.786em;
+  line-height: 1.5rem;
+  text-align: center;
+}
+.facet-group .title:not(.collapsed)::after {
+  content: "\f106";
+  position: relative;
+  top: 1px;
+}
+.facet-group .facet {
+  padding: 0.5rem;
+  align-items: normal;
+}
+.facet-group .facet .main-link {
+  align-items: normal;
+  gap: 0;
+  color: inherit;
+  text-decoration: none;
+}
+.facet-group .facet .text {
+  padding-inline-start: 0;
+}
+/* :where() para não passar à frente do .facet-group .active do custom.css */
+:where(.facet-group) .js-facet-item {
+  color: #828282;
+  border-radius: 4px;
+}
+.facet-group .js-facet-item:hover {
+  background-color: rgba(var(--color-rgb-secondary-base), 0.2);
+}
+/* Faceta aplicada com as cores do custom.css (o bootstrap5 usa .facet-group .facet.active) */
+.facet-group .facet.active {
+  background-color: rgba(var(--color-rgb-secondary-base), 0.2);
+  color: #936a2b;
+}
+.facet-group .facet.active .main-link {
+  color: inherit;
+}
+/* Selo com as medidas do Bootstrap 3 / VuFind 7 */
+.facet .badge {
+  --bs-badge-padding-x: 7px;
+  --bs-badge-padding-y: 3px;
+  --bs-badge-font-size: 12px;
+  --bs-badge-border-radius: 10px;
+  min-width: 10px;
+  max-height: 19px;
+  line-height: 1.2;
+}
+/*
+ * Botões "Mais ..." e "menos ..." do truncate.js com o visual dos a.btn .outlined-* do
+ * legado: os estilos do bootstrap5 para .more-btn/.less-btn passam à frente do CSS legado.
+ */
+.facet-group .narrow-toggle.more-btn,
+.facet-group .narrow-toggle.less-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 8px auto 0;
+  padding: 0 24px;
+  font-size: 16px;
+  line-height: 1.42857143;
+  color: var(--color-hex-primary-base);
+  background-color: transparent;
+  border: 2px solid var(--color-hex-primary-base);
+  border-radius: 4px;
+  box-shadow: none;
+  transition: all 0.2s ease-out;
+}
+/* "menos ..." como .outlined-secondary (o truncate.js dá as mesmas classes aos dois botões) */
+.facet-group .narrow-toggle.less-btn {
+  color: var(--color-hex-secondary-base);
+  border-color: var(--color-hex-secondary-base);
+}
+.facet-group .narrow-toggle.more-btn:hover {
+  color: var(--color-neutral-50);
+  background-color: var(--color-hex-primary-base);
+}
+.facet-group .narrow-toggle.less-btn:hover {
+  color: var(--color-neutral-50);
+  background-color: var(--color-hex-secondary-base);
+}
+/* Botão "Definir" do ano com a margem do .btn-slider do custom.css */
+.facet-range-form input.btn-slider {
+  margin-top: 16px;
+}
+
+/*
+ * Rodapé na largura total da página, como no legado: o bootstrap5 aplica ao elemento
+ * footer a largura máxima de .container (720–1320px).
+ */
+footer {
+  max-width: none;
+}
+
+/* Caixa de busca: no VuFind 11 o campo fica dentro de .searchForm-query (com o botão de limpar) */
+.search-form .searchForm-query {
+  flex: 0 1 auto;
+  width: 100%;
+  position: relative;
+  min-width: 0;
+}
+.search-form .searchForm-query .search-input {
+  width: 100%;
+  max-width: none;
+}
+.search-form #searchForm_type {
+  width: auto;
+}
+#searchForm.searchForm {
+  margin: 0;
+}
+/*
+ * Filtros ativos (dentro de .search-form, à direita dos botões) com as medidas do
+ * VuFind 7: o bootstrap5 muda margens e alinhamento, faz da etiqueta inteira o link de
+ * remover (vermelha e riscada ao passar o mouse) e usa o ícone fa-times.
+ */
+.active-filters {
+  gap: 0;
+  align-items: baseline;
+  margin-block-start: 0;
+}
+.active-filters .filters {
+  margin-block-start: 0;
+}
+.active-filters .filters .title-value-pair {
+  margin-inline-end: 0;
+}
+.active-filters .filters .filter-value {
+  margin: 5px;
+}
+.active-filters .filters a.filter-value:hover,
+.active-filters .filters a.filter-value:focus {
+  text-decoration: none;
+  background-color: #265680;
+}
+/* Ícone de remover do legado (window-close, \f2d3, 15px), vermelho ao passar o mouse */
+.active-filters .filter-value .icon {
+  width: 15px;
+  margin: 0 1px 0 4px;
+  vertical-align: baseline;
+}
+.active-filters .filter-value .icon::before {
+  content: "\f2d3";
+}
+.active-filters .filter-value:hover .icon {
+  color: red;
+}
+/* "Busca avançada" sem sublinhado, como os botões do legado (o VuFind 11 sublinha o link) */
+.searchForm .advanced-search-link {
+  text-decoration: none;
+}
+/* Sem o botão de limpar a busca do VuFind 11 (o legado não tinha) */
+.search-form .searchForm-reset {
+  display: none !important;
+}
+.search-form #searchForm_lookfor {
+  padding-right: 8px;
+}
+/*
+ * Ícone bdtd-advanced (circle-plus) do tamanho do fa-plus-circle do FontAwesome 4
+ * (círculo de 0,857em); o do FontAwesome 7 ocupa 1,25em de largura.
+ */
+.icon--font.fa-circle-plus {
+  width: auto;
+  font-size: 0.857143em;
+  line-height: 1.166667;
+}
+
+/* Resultados: ordenação com as medidas do legado (rótulo de 34px com 0,5rem à direita, sem
+   espaço entre os itens nem margem abaixo) */
+.search-sort {
+  gap: 0;
+}
+.search-controls .search-sort:not(:last-child) {
+  margin-bottom: 0;
+}
+.search-sort label {
+  line-height: 34px;
+  padding-right: 0.5rem;
+}
+
+/* Resultados: card com as medidas do VuFind 7 (número em 2rem, link e selo sem os ajustes do
+   VuFind 11) */
+.result.card-results {
+  align-items: normal;
+}
+.result .record-number {
+  flex: 0 1 2rem;
+  min-width: 0;
+  text-align: center;
+}
+.result .fulltext {
+  display: inline;
+}
+.result .format {
+  margin-bottom: 0;
+}
+/* Registro: tipo de documento em linha (no VuFind 11 é inline-flex e as margens aumentam a linha) */
+.record .format {
+  display: inline;
+}
+/*
+ * Registros relacionados: ícone de documento do legado (fa-file-text-o do FontAwesome 4,
+ * 0,857em de largura) com o desenho vazado do FontAwesome 7 (file-lines, regular)
+ */
+.related__format-icon {
+  display: inline-block;
+  width: 0.8575em;
+  font-style: normal;
+  line-height: 1;
+  text-align: center;
+}
+.related__format-icon::before {
+  position: relative;
+  top: 0.3px;
+  font-family: "Font Awesome 7 Free";
+  font-weight: 400;
+  content: "\f15c";
+}
+/*
+ * Registro: ícones da barra de ferramentas no tamanho e na posição dos do FontAwesome 4
+ * (a altura de linha mantém os botões com os 38,5px do legado)
+ */
+[class*="btn-type-"]::before {
+  font-size: 0.857143em;
+  text-align: center;
+}
+.btn-type-cite::before,
+.btn-type-print::before {
+  width: 1.083333em;
+  line-height: 23px;
+  vertical-align: 0.5px;
+}
+.btn-type-export::before {
+  position: relative;
+  top: -0.6px;
+  width: 1.166667em;
+  line-height: 22.5px;
+  vertical-align: 1px;
+}
+/* Paginação: setas "Anterior"/"Seguinte" do tamanho do fa-angle-* do FontAwesome 4 */
+.pagination .icon--font {
+  width: 0.481em;
+  font-size: 0.742em;
+  line-height: 1;
+  vertical-align: baseline;
+  text-align: left;
+  position: relative;
+  top: -0.5px;
+}
+.pagination .page-prev .icon--font {
+  left: 0.4px;
+}
+.pagination .page-next .icon--font {
+  left: -0.6px;
+}
+
+/*
+ * Busca avançada: o advanced_search.js do VuFind 11 usa classes (adv-group,
+ * adv-group-match, adv-term-type, #groupPlaceHolder, clear-btn) que o bootstrap5
+ * estiliza; o visual vem do CSS legado, então os estilos do bootstrap5 saem aqui.
+ */
+/* Ícones na linha de base do texto, como os <i class="fa"> do legado (no bootstrap5 ficam no topo) */
+.adv-search-form .icon--font {
+  vertical-align: baseline;
+}
+.adv-search-form .adv-group {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+.adv-search-form .adv-group-match {
+  float: none;
+  width: auto;
+}
+.adv-search-form .add_search_link {
+  margin-top: 0;
+}
+.adv-search .adv-term-remove {
+  font-size: 1.4em;
+}
+.adv-search .adv-term-remove .icon {
+  width: auto;
+  line-height: 1;
+}
+#groupPlaceHolder,
+#groupPlaceHolder:hover,
+#groupPlaceHolder:focus,
+#groupPlaceHolder:active {
+  display: block;
+  width: auto;
+  background: none;
+  border: 0;
+  border-top: 1px solid #e6e6e6;
+  border-radius: 0;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  text-align: left;
+  cursor: auto;
+}
+.adv-search-form .adv-submit {
+  margin: 0;
+}
+.form-disabled .btn[disabled] {
+  border-color: transparent;
+}
+/* Barra de anos (busca avançada e lateral) com as medidas do bootstrap-slider do legado */
+.slider-container {
+  padding: 12px 10px 9px;
+}
+.slider-container .noUi-horizontal .noUi-connects {
+  border-radius: 4px;
+}
+.slider-container .noUi-horizontal .noUi-connect {
+  background: #e1e1e1;
+  box-shadow: none;
+}
+.slider-container .noUi-horizontal .noUi-handle,
+.slider-container .noUi-horizontal .noUi-handle:hover,
+.slider-container .noUi-horizontal .noUi-handle.noUi-active {
+  top: -5px;
+  background: #0e8d68;
+  border-color: #0e8d68;
+  border-radius: 50%;
+}
+
+/*
+ * Janela (lightbox) do VuFind 7: 600px de largura (o VuFind 11 ajusta ao conteúdo, entre
+ * 600 e 1200px), moldura com sombra e botão de fechar com o "X" em SVG do legado
+ */
+#modal .modal-content {
+  display: block;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  box-shadow: 0 3px 9px rgba(0, 0, 0, 0.5);
+}
+#modal .modal-content > .close {
+  top: 0;
+  line-height: 1;
+}
+#modal .close svg {
+  width: 1em;
+  vertical-align: bottom;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2px;
+  stroke-linecap: round;
+}
+@media (min-width: 768px) {
+  #modal .modal-dialog {
+    width: 600px;
+    min-width: 0;
+    max-width: none;
+    margin: 30px auto;
+  }
+  #modal .modal-content {
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  }
+  #modal .modal-content > .close {
+    right: -60px;
+  }
+}
+
+/* Botão do Google Tradutor: ícone na linha de base, como no Bootstrap 3 (o 5 alinha svg ao meio) */
+.translateBtn svg {
+  vertical-align: baseline;
+}
+
+/*
+ * Lista completa de uma faceta (janela "Ver todos ..."), como no legado: sem o filtro do
+ * VuFind 11, ordenação numa linha de 40px com o botão ativo verde, lista com 15px acima e
+ * abaixo e a área rolável sem bordas
+ */
+.full-facet-controls .full-facet-sort-options {
+  display: block;
+  padding: 0;
+}
+.full-facet-controls .full-facet-sort-options label {
+  margin-bottom: 5px;
+}
+.full-facet-sort-options .js-facet-sort.active {
+  color: var(--color-neutral-50);
+  background-color: var(--color-hex-primary-base);
+  border-color: var(--color-hex-primary-base);
+}
+.full-facet-controls .facet-lightbox-filter {
+  display: none;
+}
+#modal .lightbox-scroll.full-facets {
+  margin-top: 0;
+  border-top: 0;
+  border-bottom: 0;
+}
+#modal .full-facet-list {
+  margin: 15px 0;
+}
+
+/*
+ * Dúvidas frequentes: o .card do legado é só uma caixa com borda (no Bootstrap 5 vira
+ * componente flex com fundo); ícone de abrir/fechar do tamanho do FontAwesome 4.
+ */
+.faq .card {
+  display: block;
+  background-color: transparent;
+}
+.btn-collapse::before {
+  font-size: calc(1.5rem * 0.857143);
+  line-height: calc(1.5rem * 1.1);
+}
+
+/* Indicadores: ícone do total com a largura do fa-database do FontAwesome 4 */
+.icon-total-indicators {
+  width: auto;
+}
+
+/*
+ * Busca avançada: ícones FontAwesome dos contadores e atalhos com a largura dos do
+ * FontAwesome 4 do legado (o 7 dá 1,25em a todos), para as caixas terem as mesmas medidas.
+ */
+.search-box .indicators .fa,
+.search-info .fa {
+  width: 1em;
+}
+.search-box .indicators .fa-university,
+.search-info .fa-line-chart {
+  width: 1.142857em;
+}
+.search-box .indicators .fa-book {
+  width: 0.928571em;
+}
+.search-box .indicators .fa-file-text,
+.search-box .indicators .fa-file {
+  width: 0.857143em;
+}
+.search-info .fa-laptop {
+  width: 1.071429em;
+}
+
+/*
+ * Barra do Governo Federal: aparência provisória até o barra_2.0.js carregar e
+ * preencher a barra (no legado eram estilos inline que o próprio script removia).
+ */
+#barra-brasil:not(:has(.conteudo-barra-brasil)) {
+  background: #7f7f7f;
+  height: 20px;
+  padding: 0 0 0 10px;
+  display: block;
+}
+#barra-brasil #menu-barra-temp {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+#barra-brasil #menu-barra-temp li {
+  display: inline;
+  float: left;
+  padding-right: 10px;
+  margin-right: 10px;
+  border-right: 1px solid #ededed;
+}
+#barra-brasil #menu-barra-temp a {
+  font-family: sans-serif;
+  text-decoration: none;
+  color: #fff;
+}

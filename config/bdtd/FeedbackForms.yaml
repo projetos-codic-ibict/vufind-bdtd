@@ -1,0 +1,25 @@
+# BDTD: formulário de contato (substitui por inteiro o FeedbackSite padrão).
+# Como na produção: nome, e-mail e assunto obrigatórios. O assunto do e-mail
+# repete o do legado ("<assunto> - <nome>"), que antes exigia editar o Form.php.
+forms:
+  FeedbackSite:
+    title: feedback_title
+    enabled: true
+    useCaptcha: true
+    reportReferrer: false
+    reportUserAgent: true
+    primaryHandler: email
+    onlyForLoggedUsers: false
+    emailSubject: "%%value:subject%% - %%value:name%%"
+    response: feedback_response
+    senderEmailRequired: true
+    senderNameRequired: true
+    fields:
+      - name: subject
+        type: text
+        label: Subject
+        required: true
+      - name: message
+        type: textarea
+        label: Message
+        required: true
